@@ -1,14 +1,13 @@
 module Zm_par
 
-using Distributions, PyCall
+using JuLIP, Distributions, PyCall
 
-export Stationary, VelocityVerlet, Zmethod, MaxwellBoltzmann_scale, MaxwellBoltzmann, ase_write
+export Stationary, VelocityVerlet, Zmethod, MaxwellBoltzmann_scale, MaxwellBoltzmann, ase_write, kB, fs
 
 kB = 8.617330337217213e-05 #units taken from Python ASE
 fs = 0.09822694788464063
 
 @pyimport ase
-ase_write = pyimport("ase.io")["write"]
 
 function MaxwellBoltzmann(at, temp)
     d = Normal()
