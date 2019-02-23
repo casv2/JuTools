@@ -8,4 +8,10 @@ include("analysis.jl")
 include("GAP.jl")
 @reexport using JuTools.GAP
 
+include("Zm_par.jl")
+@reexport using JuTools.Zm_par
+
+include("Zm_analysis.jl")
+@reexport using JuTools.Zm_par
+
 end # module
