@@ -80,7 +80,7 @@ function MaxwellBoltzmann_scale(at, temp)
     return at #, Ml, Mnm, Sl, M
 end
 
-function Zmethod(IP, at, nsteps, dt, A, N, save_config)
+function Zmethod(IP, at, nsteps, dt, A, N, save_config, element)
     E0 = energy(IP, at)
 
     m = at.M
@@ -111,7 +111,7 @@ function Zmethod(IP, at, nsteps, dt, A, N, save_config)
 
         if i % save_config == 0
             println(i)
-            pyat = ase.Atoms(@sprintf("%sTi", 2*N^3))
+            pyat = ase.Atoms(@sprintf("%s%s", 2*N^3, element))
             pyat[:set_positions](at.X)
             pyat[:set_cell](at.cell)
             push!(pyat_l, pyat)
