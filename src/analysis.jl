@@ -1,6 +1,6 @@
 module Analysis
 
-using PyCall, Plots; pyplot()
+using PyCall, Plots#; pyplot()
 
 ase_read = pyimport("ase.io")["read"]
 ase_write = pyimport("ase.io")["write"]
