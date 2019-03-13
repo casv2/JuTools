@@ -1,6 +1,6 @@
 module Zm_analysis
 
-using Plots, JSON, Glob
+using Printf, Plots, JSON, Glob
 gr(size=(800,500), html_output_format=:png)
 
 export read_Zm, Zm_E, Zm_T, Zm_PT

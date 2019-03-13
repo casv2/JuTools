@@ -1,6 +1,6 @@
 module Zm_par
 
-using JuLIP, Distributions, PyCall
+using Printf, JuLIP, Distributions, PyCall, LinearAlgebra
 
 export Stationary, VelocityVerlet, Zmethod, MaxwellBoltzmann_scale, MaxwellBoltzmann, ase_write, kB, fs
 
