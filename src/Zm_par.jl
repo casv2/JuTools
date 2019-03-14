@@ -13,7 +13,7 @@ function MaxwellBoltzmann(at, temp)
     d = Normal()
     M = reshape(collect(rand(d, 3*length(at.M))), (length(at.M),3))
     M2 = M .* sqrt.(at.M .* temp)
-    set_momenta!(at, transpose(M2))
+    set_momenta!(at, collect(transpose(M2)))
 
     return at
 end
