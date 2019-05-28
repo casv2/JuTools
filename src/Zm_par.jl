@@ -2,12 +2,12 @@ module Zm_par
 
 using Printf, JuLIP, Distributions, PyCall, LinearAlgebra
 
-export Stationary, VelocityVerlet, Zmethod, MaxwellBoltzmann_scale, MaxwellBoltzmann, ase_write, kB, fs
+export Stationary, VelocityVerlet, Zmethod, MaxwellBoltzmann_scale, MaxwellBoltzmann, kB, fs
 
 kB = 8.617330337217213e-05 #units taken from Python ASE
 fs = 0.09822694788464063
 
-@pyimport ase
+ase = pyimport("ase")
 
 function MaxwellBoltzmann(at, temp)
     d = Normal()
@@ -24,7 +24,7 @@ function Stationary(at)
     v0 = p0 / mtot
 
     momenta = [at.M[i] * v0 for i in 1:length(at.M)]
-    set_momenta!(at, at.P - momenta)
+    set_momenta!(at, collect(at.P - momenta))
 
     return at
 end
@@ -37,7 +37,7 @@ function VelocityVerlet(IP, at, dt)
 
     nA = forces(IP, at) ./ at.M
     nV = V + (.5 * (A + nA) * dt)
-    set_momenta!(at, nV .* at.M)
+    set_momenta!(at, collect(nV .* at.M))
 
     return at
 end
@@ -107,18 +107,18 @@ function Zmethod(IP, at, nsteps, dt, A, N, save_config, element)
         v = at.P ./ m
         C = A/norm(v)
 
-        set_momenta!(at, (v + C*v) .* m)
+        set_momenta!(at, collect((v + C*v) .* m))
 
-        if i % save_config == 0
-            println(i)
-            pyat = ase.Atoms(@sprintf("%s%s", 2*N^3, element))
-            pyat[:set_positions](at.X)
-            pyat[:set_cell](at.cell)
-            push!(pyat_l, pyat)
-        end
+        # if i % save_config == 0
+        #     println(i)
+        #     pyat = ase.Atoms(@sprintf("%s%s", 2*N^3, element))
+        #     pyat[:set_positions](at.X)
+        #     pyat[:set_cell](at.cell)
+        #     push!(pyat_l, pyat)
+        # end
     end
 
-    return E_tot, E_pot, E_kin, P, T, pyat_l
+    return E_tot, E_pot, E_kin, P, T#, pyat_l
 end
 
 end
