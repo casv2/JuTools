@@ -11,7 +11,7 @@ using Reexport
 include("Zm_par.jl")
 @reexport using JuTools.Zm_par
 
-# include("Zm_analysis.jl")
-# @reexport using JuTools.Zm_analysis
+include("Zm_analysis.jl")
+@reexport using JuTools.Zm_analysis
 
 end # module
