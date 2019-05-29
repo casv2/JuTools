@@ -51,7 +51,7 @@ function Zm_T(D; return_plot=true)
     end
 end
 
-function Zm_PT(D, delta_step=2, large_data_points=2, eq_length=10; return_plot=true)
+function Zm_PT(D, delta_step=2, large_data_points=2, eq_length=10; GPa=true, return_plot=true)
     p = scatter(legend =:false)
 
     colors = ["blue", "red", "green"]
@@ -61,7 +61,7 @@ function Zm_PT(D, delta_step=2, large_data_points=2, eq_length=10; return_plot=t
 
         # println(T, P)
 
-        scatter!(P[eq_length:delta_step:end], T[eq_length:delta_step:end], markersize=1, markerstrokewidth=0, color=colors[index], alpha=0.5)
+        #scatter!(P[eq_length:delta_step:end], T[eq_length:delta_step:end], markersize=1, markerstrokewidth=0, color=colors[index], alpha=0.5)
 
         large_data_point_step = (length(T)-eq_length)/large_data_points
 
@@ -87,12 +87,17 @@ function Zm_PT(D, delta_step=2, large_data_points=2, eq_length=10; return_plot=t
             push!(error_P_list, error_P)
         end
 
+        if GPa
+            mean_P_list = mean_P_list .* 160.21766208
+            error_P_list = error_P_list .* 160.21766208
+        end
+
         scatter!(mean_P_list, mean_T_list, xerr=error_P_list, yerr=error_T_list, markersize=5, color=colors[index])
     end
 
     title!(D["1"]["info"])
-    xlabel!("Pressure")
-    ylabel!("Temperature (K)")
+    xlabel!("Pressure [GPa]")
+    ylabel!("Temperature [K]")
 
     if return_plot == false
         savefig(@sprintf("PT_%s.png", D["1"]["info"]))

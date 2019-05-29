@@ -108,7 +108,7 @@ function Zmethod(IP, at, nsteps, dt, A, N, save_config, element)
         set_momenta!(at, collect((v + C*v) .* m))
 
         if i % save_config == 0
-            push!(al, at)
+            push!(al, deepcopy(at))
         end
     end
 
