@@ -78,38 +78,43 @@ function MaxwellBoltzmann_scale(at, temp)
     return at #, Ml, Mnm, Sl, M
 end
 
-function Zmethod(IP, at, nsteps, dt, A, N, save_config, element)
+function Zmethod(IP, at, nsteps, R, dt, A, N, save_config, element)
     E0 = energy(IP, at)
 
     m = at.M
 
-    E_tot = zeros(nsteps)
-    E_pot = zeros(nsteps)
-    E_kin = zeros(nsteps)
-    P = zeros(nsteps)
-    T = zeros(nsteps)
+    E_tot = zeros(nsteps*R)
+    E_pot = zeros(nsteps*R)
+    E_kin = zeros(nsteps*R)
+    P = zeros(nsteps*R)
+    T = zeros(nsteps*R)
 
     al = []
 
-    for i in 1:nsteps
+    for j in 0:R-1
+        for i in 1:nsteps
+            k = (j*nsteps)+i
+            if k % 100 == 0
+                println("iteration: ($k)", k)
+            end
+            at = VelocityVerlet(IP, at, dt * fs)
+            Ek = ((0.5 * sum(at.M) * norm(at.P ./ at.M)^2)/length(at.M)) / length(at.M)
+            Ep = (energy(IP, at) - E0) / length(at.M)
+            E_tot[k] = Ek + Ep
+            E_pot[k] = Ep
+            E_kin[k] = Ek
+            T[k] = Ek / (1.5 * kB)
+            P[k] = -tr(stress(IP, at))/3.0
 
-        at = VelocityVerlet(IP, at, dt * fs)
-        Ek = ((0.5 * sum(at.M) * norm(at.P ./ at.M)^2)/length(at.M)) / length(at.M)
-        Ep = (energy(IP, at) - E0) / length(at.M)
-        E_tot[i] = Ek + Ep
-        E_pot[i] = Ep
-        E_kin[i] = Ek
-        T[i] = Ek / (1.5 * kB)
-        P[i] = -tr(stress(IP, at))/3.0
+            if i % save_config == 0
+                push!(al, deepcopy(at))
+            end
+        end
 
         v = at.P ./ m
         C = A/norm(v)
 
         set_momenta!(at, collect((v + C*v) .* m))
-
-        if i % save_config == 0
-            push!(al, deepcopy(at))
-        end
     end
 
     return E_tot, E_pot, E_kin, P, T, al
