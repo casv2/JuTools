@@ -78,7 +78,7 @@ function MaxwellBoltzmann_scale(at, temp)
     return at #, Ml, Mnm, Sl, M
 end
 
-function Zmethod(IP, at, nsteps, R, dt, A, N, save_config, element)
+function Zmethod(IP, at, nsteps, R, dt, A, N, save_config)
     E0 = energy(IP, at)
 
     m = at.M
@@ -94,9 +94,6 @@ function Zmethod(IP, at, nsteps, R, dt, A, N, save_config, element)
     for j in 0:R-1
         for i in 1:nsteps
             k = (j*nsteps)+i
-            if k % 100 == 0
-                println("iteration: ($k)", k)
-            end
             at = VelocityVerlet(IP, at, dt * fs)
             Ek = ((0.5 * sum(at.M) * norm(at.P ./ at.M)^2)/length(at.M)) / length(at.M)
             Ep = (energy(IP, at) - E0) / length(at.M)
@@ -105,6 +102,11 @@ function Zmethod(IP, at, nsteps, R, dt, A, N, save_config, element)
             E_kin[k] = Ek
             T[k] = Ek / (1.5 * kB)
             P[k] = -tr(stress(IP, at))/3.0
+
+            if k % 100 == 0
+                Temp =  (Ek / (1.5 * kB))
+                println("iteration: ($k), temp: ($Temp)")
+            end
 
             if i % save_config == 0
                 push!(al, deepcopy(at))
